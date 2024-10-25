@@ -13,19 +13,36 @@ def cargar_datos():
         print("Los datos han sido cargados correctamente.")
     except FileNotFoundError:
         print("No se encontró el archivo productos.txt, se iniciara una lista vacía.")
+    except ValueError:
+        print("Error al leer el archivo, formato de datos incorrecto.")
+
 
 def guardar_datos():
-    with open('productos.txt', 'w') as archivo:
-        for producto in productos:
-            archivo.write(f"{producto['nombre']},{producto['precio']},{producto['cantidad']}\n")
-    print("Los datos han sido guardados correctamente.")
+    try:
+        with open('productos.txt', 'w') as archivo:
+            for producto in productos:
+                archivo.write(f"{producto['nombre']},{producto['precio']},{producto['cantidad']}\n")
+        print("Los datos han sido guardados correctamente.")
+    except Exception as e:
+        print(f"Error al guardar los datos: {e}")
 
 def añadir_producto():
     # Lógica para añadir un producto
     nombre = input("Introduce el nombre del producto: ") #Un producto debe de tener nombre
-    precio = float(input("Introduce el precio del producto: ")) #Un producto debe de tener precio
-    cantidad = int(input("Introduce la cantidad disponible: ")) #Cantidad para saber el stock
+    while True:
+        try:
+            precio = float(input("Introduce el precio del producto: ")) #Un producto debe de tener precio
+            break
+        except ValueError:
+            print("Por favor, introduce un precio válido.")
     
+    while True:
+        try:
+            cantidad = int(input("Introduce la cantidad disponible: ")) #Cantidad para saber el stock
+            break
+        except ValueError:
+            print("Por favor, introduce una cantidad válida.")
+
     productos.append({ #append para agregar los elementos a la lista
         'nombre': nombre,
         'precio': precio,
@@ -43,16 +60,36 @@ def ver_productos():
 
 def actualizar_producto():
     # Lógica para actualizar un producto
-    nombre = input("Introduce el nombre del producto que desea actualizar: ") #para futura leo ver para que despliegue la lista de productos disponibles para poder seleccionar y actualizarlo directo
+    nombre = input("Introduce el nombre del producto que desea actualizar: ").strip()
     for producto in productos:
         if producto['nombre'] == nombre:
             print("Producto encontrado. ¿Qué desea actualizar?")
             nuevo_nombre = input("Introduce el nuevo nombre del producto (presiona tecla enter para no cambiar): ") or producto['nombre']
-            nuevo_precio = input("Introduce el nuevo precio del producto (presiona tecla enter para no cambiar): ")
-            nuevo_precio = float(nuevo_precio) if nuevo_precio else producto['precio']
-            nueva_cantidad = input("Introduce la nueva cantidad (presiona enter para no cambiar): ")
-            nueva_cantidad = int(nueva_cantidad) if nueva_cantidad else producto['cantidad']
             
+            while True:
+                nuevo_precio = input("Introduce el nuevo precio del producto (presiona tecla enter para no cambiar): ")
+                if nuevo_precio:
+                    try:
+                        nuevo_precio = float(nuevo_precio)
+                        break
+                    except ValueError:
+                        print("Por favor, introduce un precio válido.")
+                else:
+                    nuevo_precio = producto['precio']
+                    break
+            
+            while True:
+                nueva_cantidad = input("Introduce la nueva cantidad (presiona tecla enter para no cambiar): ")
+                if nueva_cantidad:
+                    try:
+                        nueva_cantidad = int(nueva_cantidad)
+                        break
+                    except ValueError:
+                        print("Por favor, introduce una cantidad válida.")
+                else:
+                    nueva_cantidad = producto['cantidad']
+                    break
+
             producto['nombre'] = nuevo_nombre
             producto['precio'] = nuevo_precio
             producto['cantidad'] = nueva_cantidad
